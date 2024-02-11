@@ -25,7 +25,7 @@ This app allows for tracking employee information.
 1. Open the cloned repository in any source code editor e.g. Visual Studio Code.
 2. Open integrated terminal on server.js.
 3. Enter `node server.js` or `npm start` in the command line.
-4. 
+
 
 ## License
 
@@ -37,7 +37,6 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 <https://www.npmjs.com/package/mysql2>
 <https://stackoverflow.com/questions/18431358/mysql-foreign-key-on-same-table>
 <https://stackoverflow.com/questions/58304259/mysql-column-default-value-0-saves-as-null>
-
 
 
 ## Questions
@@ -52,4 +51,4 @@ If you have any questions, contact the developer at:
 [Repository Link:](https://github.com/JulieABowers/Drowsier_Emu_Employee_Tracker)
 
 ## Walkthrough Video:
-[Click Here to Watch]()
+[Click Here to Watch](https://drive.google.com/file/d/1pORLtmjRJseQgMGJy_krx7sIKB9GrBUR/view)
