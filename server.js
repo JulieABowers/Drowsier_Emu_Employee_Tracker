@@ -257,6 +257,25 @@ function init() {
                         });
                         break;
                     case 'Update Employee Role':
+                        sqlQuery = `SELECT ID, TITLE AS NAME FROM ROLE ORDER BY NAME`;
+                        queryData(sqlQuery, [ ], 'list', 'Role');
+
+                        sqlQuery = `SELECT ID, CONCAT(FIRST_NAME, ' ', LAST_NAME) AS NAME FROM EMPLOYEE ORDER BY NAME;`;
+                        queryData(sqlQuery, [ ], 'list', 'Employee');
+
+                        inquirer.prompt(updateEmployeeQuestion).then((answers) => {
+                            let managerStatus = 0;
+                            
+                            if (answers.isManager) {
+                                managerStatus = 1;
+                            }
+                            sqlQuery = 'UPDATE EMPLOYEE SET ROLE_ID = ? WHERE ID = ?';
+                            queryData(sqlQuery, [answers.newRole, answers.empToUpdate], '', '');
+                            console.log(`\n\nEmployee updated.\n\n`);
+
+                            // User is routed back to the initial question to determine the next operation.
+                            init();
+                        });
                         break;
                     case 'Exit':
                         console.log("\n\nThank you for using the Drowsier Emu Employee Tracker. Goodbye.")
