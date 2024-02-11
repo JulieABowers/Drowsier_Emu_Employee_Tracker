@@ -10,6 +10,11 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+let departmentList = [];
+let roleList = [];
+let managerList = [];
+let employeeList = [];
+
 // Connect to database
 const db = mysql.createConnection({
         host: 'localhost',
@@ -40,10 +45,73 @@ const addDepartmentQuestion = {
     name: 'newDepartment',
     message: 'What department would you like to add?',
 };
+
+let addRoleQuestion = [{
+    type: 'input',
+    name: 'newRole',
+    message: 'What role would you like to add?',
+}, {
+    type: 'input',
+    name: 'newSalary',
+    message: 'What is the salary for this new role?',
+}, {
+    type: 'list',
+    name: 'newLinkedDepartment',
+    message: 'What department is this role in?',
+    choices: departmentList,
+}
+];
+
+let addEmployeeQuestion = [{
+    type: 'input',
+    name: 'newFName',
+    message: 'What is the employee\'s first name?',
+}, {
+    type: 'input',
+    name: 'newLName',
+    message: 'What is the employee\'s last name?',
+}, {
+    type: 'confirm',
+    name: 'isManager',
+    message: 'Is this employee a manager?',
+}, {
+    type: 'list',
+    name: 'newRole',
+    message: 'What role is the employee assigned to?',
+    choices: roleList,
+}, {
+    type: 'list',
+    name: 'newManager',
+    message: 'What manager is the employee assigned to?',
+    choices: managerList
+}
+];
+
+let updateEmployeeQuestion = [{
+    //There is a bug in node when a list is the first type in a prompt. It won't display the list choices.
+    //Let's subliminally influence that employees are awesome.
+    type: 'confirm',
+    name: 'tempFix',
+    message: 'Employees are the heart of our business.',
+}, {
+    type: 'list',
+    name: 'empToUpdate',
+    message: 'Which employee would you like to update?',
+    choices: employeeList,
+},    
+{
+    type: 'list',
+    name: 'newRole',
+    message: 'What role should the employee be assigned to?',
+    choices: roleList,
+}
+];
+
 function init() {
     try {
         let sqlQuery = '';
-
+        let inputValue = '';
+        
         inquirer.prompt(doWhatQuestion).then((answers) => {
             const { WhatToDo } = answers;
                 switch (WhatToDo)
@@ -143,8 +211,28 @@ function init() {
                         init();
                         break;
                     case 'Add Department':
+                        inquirer.prompt(addDepartmentQuestion).then((answers) => {
+                            inputValue = [answers.newDepartment];
+                            sqlQuery = 'INSERT INTO DEPARTMENT (NAME) VALUES (?)';
+                            queryData(sqlQuery, [inputValue], '', '');
+                            console.log(`\nDepartment ${answers.newDepartment} added.\n`);
+
+                            // User is routed back to the initial question to determine the next operation.
+                            init();                            
+                        });
                         break;
                     case 'Add Role':
+                        sqlQuery = `SELECT ID, NAME FROM DEPARTMENT ORDER BY NAME`;
+                        queryData(sqlQuery, [ ], 'list', 'Department');
+
+                        inquirer.prompt(addRoleQuestion).then((answers) => {
+                            sqlQuery = 'INSERT INTO ROLE (TITLE, SALARY, DEPARTMENT_ID) VALUES (?, ?, ?)';
+                            queryData(sqlQuery, [answers.newRole, answers.newSalary, answers.newLinkedDepartment], 'insert', 'Role');
+                            console.log(`\n\nRole ${answers.newRole} added.\n\n`);
+
+                            // User is routed back to the initial question to determine the next operation.
+                            init();
+                        });
                         break;
                     case 'Add Employee':
                         break;
@@ -173,6 +261,31 @@ function queryData(sqlQuery, bindVar, action, category) {
             {
                 case 'view':
                     console.table(res);
+                    break;
+                case 'list':
+                    switch (category)
+                    {
+                        case 'Department':
+                            for (i = 0; i < res.length; i++) {
+                                departmentList.push({'name' : res[i].NAME, 'value': res[i].ID});
+                            };
+                            break;
+                        case 'Employee':
+                            for (i = 0; i < res.length; i++) {
+                                employeeList.push({'name' : res[i].NAME, 'value': res[i].ID});
+                            };
+                        break;
+                        case 'Manager':
+                            for (i = 0; i < res.length; i++) {
+                                managerList.push({'name' : res[i].NAME, 'value': res[i].ID});
+                            };
+                            break;
+                        case 'Role':
+                            for (i = 0; i < res.length; i++) {
+                                roleList.push({'name' : res[i].NAME, 'value': res[i].ID});
+                            };
+                            break;
+                    }
                     break;
                 default:
                     break;
