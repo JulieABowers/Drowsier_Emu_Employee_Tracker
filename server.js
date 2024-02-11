@@ -87,7 +87,11 @@ function init() {
                             sqlQuery += 'FROM ROLE R ';
                             sqlQuery += 'JOIN DEPARTMENT D ON R.DEPARTMENT_ID = D.ID ';
                             sqlQuery += 'ORDER BY R.TITLE;';
-                        viewData(sqlQuery);
+
+                            queryData(sqlQuery, '', 'view', '');
+
+                            // User is routed back to the initial question to determine the next operation.
+                            init();
                         break;
                     case 'View All Employees':
                         /*  When "View All Employees" is chosen, all employee plus role and department information is returned.
@@ -132,8 +136,11 @@ function init() {
                         sqlQuery += 'LEFT JOIN EMPLOYEE E1 ON E.MANAGER_ID = E1.ID ';
                         sqlQuery += 'JOIN DEPARTMENT D ON R.DEPARTMENT_ID = D.ID ';
                         sqlQuery += 'ORDER BY E.FIRST_NAME, E.LAST_NAME;';
-                        console.log(sqlQuery);
-                        viewData(sqlQuery);
+                        
+                        queryData(sqlQuery, '', 'view', '');
+
+                        // User is routed back to the initial question to determine the next operation.
+                        init();
                         break;
                     case 'Add Department':
                         break;
@@ -144,7 +151,7 @@ function init() {
                     case 'Update Employee Role':
                         break;
                     case 'Exit':
-                        console.log("Thank you for using the Drowsier Emu Employee Tracker. Goodbye.")
+                        console.log("\n\nThank you for using the Drowsier Emu Employee Tracker. Goodbye.")
                         db.end();
                         break;
                     default:
