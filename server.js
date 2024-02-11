@@ -19,7 +19,8 @@ const db = mysql.createConnection({
     }
 );
 
-const question = {
+//Options presented to the user
+const doWhatQuestion = {
     type: 'list',
     name: 'WhatToDo',
     message: 'What would you like to do?',
@@ -34,11 +35,16 @@ const question = {
     ]
 };
 
+const addDepartmentQuestion = {
+    type: 'input',
+    name: 'newDepartment',
+    message: 'What department would you like to add?',
+};
 function init() {
     try {
         let sqlQuery = '';
 
-        inquirer.prompt(question).then((answers) => {
+        inquirer.prompt(doWhatQuestion).then((answers) => {
             const { WhatToDo } = answers;
                 switch (WhatToDo)
                 {
@@ -53,7 +59,11 @@ function init() {
                             Department              NAME
                         */
                         sqlQuery = 'SELECT ID AS "Department ID", NAME AS "Department Name" FROM DEPARTMENT ORDER BY NAME;';
-                        viewData(sqlQuery);
+
+                        queryData(sqlQuery, '', 'view', '');
+
+                        // User is routed back to the initial question to determine the next operation.
+                        init();
                         break;
                     case 'View All Roles':
                         /*  When "View All Roles" is chosen, all role and department information is returned.
@@ -146,15 +156,20 @@ function init() {
     }
 }
 
-function viewData(sqlQuery) {
+function queryData(sqlQuery, bindVar, action, category) {
     try {
-        db.query(sqlQuery, (err, res) => {
-            if (err) throw err;
+        db.query(sqlQuery, bindVar, (err, res) => {
             // The requested data is presented
-            console.table(res);
+            let newList = [];
             
-            // User is routed back to the initial question to determine the next operation.
-            init();
+            switch (action)
+            {
+                case 'view':
+                    console.table(res);
+                    break;
+                default:
+                    break;
+            }
         })
     } catch (err) {
         console.error(err);
