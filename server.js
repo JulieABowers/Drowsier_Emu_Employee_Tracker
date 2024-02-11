@@ -235,6 +235,26 @@ function init() {
                         });
                         break;
                     case 'Add Employee':
+                        sqlQuery = `SELECT ID, TITLE AS NAME FROM ROLE ORDER BY NAME`;
+                        queryData(sqlQuery, [ ], 'list', 'Role');
+
+                        sqlQuery = `SELECT ID, CONCAT(FIRST_NAME, ' ', LAST_NAME) AS NAME FROM EMPLOYEE WHERE IS_MANAGER = ? ORDER BY NAME`;
+                        queryData(sqlQuery, [ 1 ], 'list', 'Manager');
+
+                        inquirer.prompt(addEmployeeQuestion).then((answers) => {
+                            let managerStatus = 0;
+                            
+                            if (answers.isManager) {
+                                managerStatus = 1;
+                            }
+                            
+                            sqlQuery = 'INSERT INTO EMPLOYEE (FIRST_NAME, LAST_NAME, IS_MANAGER, ROLE_ID, MANAGER_ID) VALUES (?, ?, ?, ?, ?)';
+                            queryData(sqlQuery, [answers.newFName, answers.newLName, managerStatus, answers.newRole, answers.newManager], '', '');
+                            console.log(`\n\nEmployee ${answers.newFName + ' ' + answers.newLName} added.\n\n`);
+
+                            // User is routed back to the initial question to determine the next operation.
+                            init();
+                        });
                         break;
                     case 'Update Employee Role':
                         break;
