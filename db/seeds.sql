@@ -8,7 +8,7 @@ INSERT INTO DEPARTMENT (NAME)
 VALUES 
     ('Human Resources'),
     ('IT'),
-    ('Executive');
+    ('Development');
 
 INSERT INTO ROLE (TITLE, SALARY, DEPARTMENT_ID)
 VALUES
